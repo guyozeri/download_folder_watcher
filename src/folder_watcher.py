@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import json
 import os
 import sys
 from os.path import basename, dirname
@@ -8,6 +9,8 @@ from logbook import Logger, StreamHandler
 from typing import Union
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler, FileCreatedEvent, DirCreatedEvent, FileSystemEvent
+
+DEFAULT_CONF_PATH = r'C:\folder_watcher\conf.json'
 
 stream_handler = StreamHandler(sys.stdout)
 stream_handler.push_application()
@@ -46,13 +49,54 @@ class FileRelocateEventHandler(PatternMatchingEventHandler):
                                                                       patterns=self.patterns)
 
 
+class ObserverManager(PatternMatchingEventHandler):
+
+    def __init__(self, conf_path=DEFAULT_CONF_PATH):
+        self.logger = Logger(self.__class__.__name__)
+        self.conf_path = conf_path
+        self.observer = Observer()
+        self._set_conf_observer()
+        super(ObserverManager, self).__init__(patterns=[self.conf_path])
+
+    def _set_conf_observer(self):
+        self._conf_observer = Observer()
+        self._conf_observer.schedule(self, dirname(self.conf_path))
+
+    def _load_conf_from_path(self):
+        with open(self.conf_path, 'rb') as conf_file:
+            conf = json.load(conf_file)
+        for path, rules in conf.items():
+            self._add_rules_to_dir(path, rules)
+
+    def _add_rules_to_dir(self, path, rules):
+        assert os.path.isdir(path), "Path must be a directory."
+        for rule in rules:
+            event_handler = FileRelocateEventHandler(**rule)
+            self.observer.schedule(event_handler, path)
+
+    def on_modified(self, event):
+        self.logger.info('Caught changes in {}'.format(self.conf_path))
+        self.observer.unschedule_all()
+        self._load_conf_from_path()
+        self.logger.info('Reload conf from path')
+
+    def start(self):
+        self._load_conf_from_path()
+        self._conf_observer.start()
+        self.observer.start()
+
+    def stop(self):
+        self._conf_observer.stop()
+        self.observer.stop()
+
+    def join(self):
+        self._conf_observer.join()
+        self.observer.join()
+
+
 if __name__ == '__main__':
-    event_handler = FileRelocateEventHandler(r'Images', patterns=['*.jpeg', '*.jpg'], ignore_directories=True)
-    event_handler2 = FileRelocateEventHandler(r'Some', patterns=['*some*'], ignore_directories=True)
-    observer = Observer()
-    observer.schedule(event_handler, path=r'C:\temp\try')
-    observer.schedule(event_handler2, path=r'C:\temp\try')
-    observer.start()
+    observer_manager = ObserverManager()
+    observer_manager.start()
 
     print('Ctrl+C for exiting...')
     try:
@@ -60,6 +104,6 @@ if __name__ == '__main__':
             sleep(1)
     except KeyboardInterrupt:
         print('Stopping...')
-        observer.stop()
+        observer_manager.stop()
         print('Waiting for thread to terminate...')
-        observer.join()
+        observer_manager.join()
