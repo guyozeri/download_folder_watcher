@@ -49,13 +49,21 @@ class FileRelocateEventHandler(PatternMatchingEventHandler):
                                                                       patterns=self.patterns)
 
 
-class ObserverManager(object):
+class ObserverManager(PatternMatchingEventHandler):
 
-    def __init__(self):
+    def __init__(self, conf_path=DEFAULT_CONF_PATH):
+        self.logger = Logger(self.__class__.__name__)
+        self.conf_path = conf_path
         self.observer = Observer()
+        self._set_conf_observer()
+        super(ObserverManager, self).__init__(patterns=[self.conf_path])
 
-    def load_conf_from_path(self, path=DEFAULT_CONF_PATH):
-        with open(path, 'rb') as conf_file:
+    def _set_conf_observer(self):
+        self._conf_observer = Observer()
+        self._conf_observer.schedule(self, dirname(self.conf_path))
+
+    def _load_conf_from_path(self):
+        with open(self.conf_path, 'rb') as conf_file:
             conf = json.load(conf_file)
         for path, rules in conf.items():
             self._add_rules_to_dir(path, rules)
@@ -66,19 +74,28 @@ class ObserverManager(object):
             event_handler = FileRelocateEventHandler(**rule)
             self.observer.schedule(event_handler, path)
 
+    def on_modified(self, event):
+        self.logger.info('Caught changes in {}'.format(self.conf_path))
+        self.observer.unschedule_all()
+        self._load_conf_from_path()
+        self.logger.info('Reload conf from path')
+
     def start(self):
+        self._load_conf_from_path()
+        self._conf_observer.start()
         self.observer.start()
 
     def stop(self):
+        self._conf_observer.stop()
         self.observer.stop()
 
     def join(self):
+        self._conf_observer.join()
         self.observer.join()
 
 
 if __name__ == '__main__':
     observer_manager = ObserverManager()
-    observer_manager.load_conf_from_path()
     observer_manager.start()
 
     print('Ctrl+C for exiting...')
