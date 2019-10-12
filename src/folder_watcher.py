@@ -7,8 +7,7 @@ from time import sleep
 from logbook import Logger, StreamHandler
 from typing import Union
 from watchdog.observers import Observer
-from watchdog.events import PatternMatchingEventHandler, FileSystemEventHandler, FileCreatedEvent, DirCreatedEvent, \
-    FileSystemEvent
+from watchdog.events import PatternMatchingEventHandler, FileCreatedEvent, DirCreatedEvent, FileSystemEvent
 
 stream_handler = StreamHandler(sys.stdout)
 stream_handler.push_application()
