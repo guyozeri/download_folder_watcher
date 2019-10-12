@@ -1,0 +1,50 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "cf24f47b2d7561db1ac045f12e3b6f98467245028f59e27001c42b25d3c3293a"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "2.7"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "logbook": {
+            "hashes": [
+                "sha256:0b523cc67171b273ceb7ea2a530b103793b36941abc70e4f285ea1583d165638",
+                "sha256:1aeb299401d9fe228f204d83073f0ec240e3ae0d50295bf8e5be91a9cd8b7a57",
+                "sha256:2afa44c20465a6629a96f8590910afe7eab1fb5bcd19e1eaf75c92c51428d835",
+                "sha256:2d1c4ffd26b2c11587a028b3905aaaa0dc43943106755c3989364553ed6d17c2",
+                "sha256:6dec7a1aac0efa86c04160d8c2602724b95109c0a84492c41bd30efab240ee56",
+                "sha256:6fb3543e972acb3460fac489db4a1718400226e500dfe4d72990e77cca311549",
+                "sha256:a4192853721f25f543040ea0da010b8df630a5d1f07a2ad9bbd5556c41b04ff6",
+                "sha256:de2ede3732a47b6940af1299b5a61524f570fe314a8d9f0cb5646bd7b33a11c6",
+                "sha256:f4c1cbac42b532961e40439d1061ab9c61546851ce9b3a4ab7ed5ef05acfb07d"
+            ],
+            "index": "pypi",
+            "version": "==1.5.2"
+        },
+        "watchdog": {
+            "git": "https://github.com/gorakhargosh/watchdog.git",
+            "ref": "18bb843ae9fa777a8f214c291a0e201f858bd9a1"
+        }
+    },
+    "develop": {
+        "typing": {
+            "hashes": [
+                "sha256:91dfe6f3f706ee8cc32d38edbbf304e9b7583fb37108fef38229617f8b3eba23",
+                "sha256:c8cabb5ab8945cd2f54917be357d134db9cc1eb039e59d1606dc1e60cb1d9d36",
+                "sha256:f38d83c5a7a7086543a0f649564d661859c5146a85775ab90c0d2f93ffaa9714"
+            ],
+            "index": "pypi",
+            "version": "==3.7.4.1"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+typing = "*"
+
+[packages]
+watchdog = {git = "https://github.com/gorakhargosh/watchdog.git",ref = "master"}
+logbook = "*"
+
+[requires]
+python_version = "2.7"
