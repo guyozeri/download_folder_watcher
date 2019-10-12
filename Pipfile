@@ -7,7 +7,7 @@ verify_ssl = true
 typing = "*"
 
 [packages]
-watchdog = "*"
+watchdog = {git = "https://github.com/gorakhargosh/watchdog.git",ref = "master"}
 logbook = "*"
 
 [requires]
