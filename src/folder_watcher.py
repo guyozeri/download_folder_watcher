@@ -37,10 +37,9 @@ class FileRelocateEventHandler(PatternMatchingEventHandler):
     def on_created(self, event):
         # type: (Union[FileCreatedEvent, DirCreatedEvent]) -> None
         self.logger.info('Detected new matches file {}'.format(event.src_path))
-        dir_path = os.path.join(dirname(event.src_path), self.dst_dir)
-        if not os.path.exists(dir_path):
-            os.mkdir(dir_path)
-        dst_path = os.path.join(dir_path, basename(event.src_path))
+        if not os.path.exists(self.dst_dir):
+            os.mkdir(self.dst_dir)
+        dst_path = os.path.join(self.dst_dir, basename(event.src_path))
         self.logger.info('Moved to {}'.format(dst_path))
         os.rename(event.src_path, dst_path)
 
@@ -71,6 +70,7 @@ class ObserverManager(PatternMatchingEventHandler):
     def _add_rules_to_dir(self, path, rules):
         assert os.path.isdir(path), "Path must be a directory."
         for rule in rules:
+            self.logger.debug('Added rule {rule} to path {path}'.format(rule=rule, path=path))
             event_handler = FileRelocateEventHandler(**rule)
             self.observer.schedule(event_handler, path)
 
@@ -106,4 +106,5 @@ if __name__ == '__main__':
         print('Stopping...')
         observer_manager.stop()
         print('Waiting for thread to terminate...')
+    finally:
         observer_manager.join()
